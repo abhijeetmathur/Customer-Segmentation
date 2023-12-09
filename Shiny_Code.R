@@ -1,16 +1,14 @@
 library(shiny)
 library(caret)
 
- data <- read.csv("D:\\Customer\\Customers_seg_dataset1.csv")
+data <- read.csv("D:\\Customer\\Customers_seg_dataset1.csv")
 
 data$gender <- as.factor(data$gender)
 data$age <- as.numeric(data$age)
 data$spending.score <- as.numeric(data$spending.score)
 
-# Encode gender
 data$gender <- as.numeric(factor(data$gender, levels = c("Male", "Female")))
 
-# Split the data into training and testing sets
 set.seed(123)
 trainIndex <- createDataPartition(data$salary_in_k., p = 0.8, 
                                   list = FALSE, 
@@ -22,14 +20,28 @@ model <- lm(salary_in_k. ~ gender + age + spending.score, data = train_data)
 
 ui <- fluidPage(
   titlePanel("Salary Prediction App"),
+  tags$head(
+    tags$style(HTML("
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #ADD8E6;
+      }
+    "))
+  ),
   sidebarLayout(
     sidebarPanel(
+      width = 20,
       selectInput("gender", "Select Gender:", choices = c("Male", "Female")),
       numericInput("age", "Enter Age:", value = 25, min = 18, max = 100),
       numericInput("spending_score", "Enter Spending Score:", value = 50, min = 0, max = 100),
       actionButton("predict_button", "Predict Salary")
     ),
     mainPanel(
+      style = "border: 2px solid #4CAF50; padding: 10px; border-radius: 10px; background-color: #E0E0E0;",
       textOutput("predicted_salary")
     )
   )
@@ -56,4 +68,5 @@ server <- function(input, output) {
   })
 }
 
-shinyApp(ui,server)
+shinyApp(ui, server)
+
